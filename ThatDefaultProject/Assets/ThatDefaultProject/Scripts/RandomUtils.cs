@@ -17,7 +17,7 @@ namespace that
 
     public static class RandomUtils
     {
-        public static T GetWeightedRandomValue<T>(params WeightedValue<T>[] weightedVals)
+        public static T GetWeightedRandom<T>(params WeightedValue<T>[] weightedVals)
         {
             float totalWeight = weightedVals.Sum(obj => obj.Weight);
 
@@ -37,7 +37,7 @@ namespace that
 
         public static bool YesOrNo(float yesWeight = 1f, float noWeight= 1f) 
         {
-            return GetWeightedRandomValue(new WeightedValue<bool>(yesWeight,true),new WeightedValue<bool>(noWeight,false));
+            return GetWeightedRandom(new WeightedValue<bool>(yesWeight,true),new WeightedValue<bool>(noWeight,false));
         }
     }
 }
