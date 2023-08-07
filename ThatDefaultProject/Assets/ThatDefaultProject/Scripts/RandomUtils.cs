@@ -32,7 +32,7 @@ namespace that
                 }
             }
 
-            throw new UnityException("Something went terribly wrong. TotalWeight might've been 0");
+            throw new UnityException("Something went terribly wrong. TotalWeight might've been 0. Keep in mind that this does not support negative weights.");
         }
 
         public static bool YesOrNo(float yesWeight = 1f, float noWeight= 1f) 
