@@ -98,11 +98,10 @@ namespace that
         private void SpawnTrailingAudioSource(Transform transform, out AudioSource audioSource, out DestroyTimer destroyTimer)
         {
             var obj = new GameObject("[THAT] TrailingAudioSource");
-            obj.AddComponent<AudioSource>();
-            obj.AddComponent<DestroyTimer>();
-            var newObj = Instantiate(obj, transform.position,transform.rotation);
-            audioSource = newObj.GetComponent<AudioSource>();
-            destroyTimer = newObj.GetComponent<DestroyTimer>();
+            obj.transform.position = transform.position;
+            obj.transform.rotation = transform.rotation;
+            audioSource = obj.AddComponent<AudioSource>();
+            destroyTimer = obj.AddComponent<DestroyTimer>();
         }
     }
 }
