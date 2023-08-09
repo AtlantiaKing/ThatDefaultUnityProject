@@ -20,10 +20,10 @@ namespace that
         {
             if (_cameraObject == null)
             {
-                _camera = FindAnyObjectByType<Camera>();
+                _camera = Camera.main;
                 if (_camera == null)
                 {
-                    _camera = Camera.main;
+                    _camera = FindAnyObjectByType<Camera>();
                 }
                 _cameraObject = _camera.gameObject;
             }
