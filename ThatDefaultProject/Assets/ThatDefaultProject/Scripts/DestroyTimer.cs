@@ -1,33 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace that
 {
     public class DestroyTimer : MonoBehaviour
     {
+        [Tooltip(
+            "Time can only have meaningful change when it is set before the Start of DestroyTimer is called. " +
+            "Start is called the first frame that the script is active. " +
+            "If you want to set the time later, disable the script."
+            )]
         [SerializeField] private float _time = 1f;
-        public float TimeLeft { get { return _time; } set { _time = value; } }
 
-#if UNITY_EDITOR
-        [Header("Editor only. Tooltip for info")]
-        [Tooltip("This value will show off the start value while the time value will tick down to 0.")]
-        [SerializeField] private float _startValue;
-#endif
+        /// <summary>
+        /// Time can only have meaningful change when it is set before the Start of DestroyTimer is called.
+        /// <para>Start is called the first frame that the script is active.</para>
+        /// <para>If you want to set the time later, disable the script.</para>
+        /// </summary>
+        public float Time { get { return _time; } set {  _time = value; } }
 
-#if UNITY_EDITOR
-        void Start()
-        {
-            _startValue = _time;
-        }
-#endif
-
-        void Update()
-        {
-            _time -= Time.deltaTime;
-            if (_time > 0f) return;
-            Destroy(gameObject);
-        }
+        void Start() => Destroy(gameObject, _time);
     }
 }

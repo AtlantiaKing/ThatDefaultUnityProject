@@ -45,14 +45,14 @@ namespace that
         public void PlayTrailingAudioSource(Transform transform)
         {
             SpawnTrailingAudioSource(transform, out AudioSource src, out DestroyTimer timer);
-            timer.TimeLeft = _longestClipTime;
+            timer.Time = _longestClipTime;
             Play(src);
         }
         
         public void PlayOneShotTrailingAudioSource(Transform transform)
         {
             SpawnTrailingAudioSource(transform, out AudioSource src, out DestroyTimer timer);
-            timer.TimeLeft = _longestClipTime;
+            timer.Time = _longestClipTime;
             PlayOneShot(src);
         }
 
