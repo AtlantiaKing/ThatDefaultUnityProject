@@ -20,7 +20,7 @@ namespace that
 
         public class Blackboard
         {
-            private Dictionary<string, IBlackboardField> _blackBoardData;
+            private Dictionary<string, IBlackboardField> _blackBoardData = new();
 
             public bool AddData<T>(string name, T data)
             {
