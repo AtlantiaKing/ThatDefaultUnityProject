@@ -135,12 +135,7 @@ namespace that
             }
         }
 
-        public interface IDecisionMaking
-        {
-            public void Update();
-        }
-
-        public class BehaviorTree : IDecisionMaking
+        public class BehaviorTree
         {
             public BehaviorState CurrentState { get; private set; } = BehaviorState.Failure;
             private Behavior _rootBehavior;
