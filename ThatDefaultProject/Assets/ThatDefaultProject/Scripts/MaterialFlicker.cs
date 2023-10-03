@@ -1,32 +1,30 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace that
 {
     public class MaterialFlicker : MonoBehaviour
     {
-        [SerializeField] private SkinnedMeshRenderer _skinnedMeshRenderer;
+        [SerializeField] private List<MeshRenderer> _meshRenderers;
         [SerializeField] private Material _matToFlickerTo;
         [SerializeField] private float _flickerLength = 0.5f;
         private Coroutine _resetMaterialCoroutine;
 
-        private void Awake()
-        {
-            if (_skinnedMeshRenderer == null)
-            {
-                _skinnedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
-            }
-        }
-
         public void FlickerForSeconds(float length)
         {
-            var originalMat = _skinnedMeshRenderer.material;
-            _skinnedMeshRenderer.material = _matToFlickerTo;
+            List<Tuple<MeshRenderer, Material>> originalMeshRendMats = new();
+            foreach (MeshRenderer meshRenderer in _meshRenderers) 
+            {
+                originalMeshRendMats.Add(new(meshRenderer, meshRenderer.material));
+                meshRenderer.material = _matToFlickerTo;
+            }
             if (_resetMaterialCoroutine != null)
             {
                 StopCoroutine(_resetMaterialCoroutine);
             }
-            _resetMaterialCoroutine = StartCoroutine(ResetMaterialCoroutine(originalMat, length));
+            _resetMaterialCoroutine = StartCoroutine(ResetMaterialCoroutine(originalMeshRendMats, length));
         }
 
         public void Flicker()
@@ -34,10 +32,13 @@ namespace that
             FlickerForSeconds(_flickerLength);
         }
 
-        private IEnumerator ResetMaterialCoroutine(Material mat, float length)
+        private IEnumerator ResetMaterialCoroutine(List<Tuple<MeshRenderer, Material>> originalMeshRendMats, float length)
         {
             yield return new WaitForSeconds(length);
-            _skinnedMeshRenderer.material = mat;
+            foreach (var meshRendMat in originalMeshRendMats)
+            {
+                meshRendMat.Item1.material = meshRendMat.Item2;
+            }
         }
     }
 }
