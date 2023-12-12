@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace that
@@ -44,10 +42,10 @@ namespace that
                     _patch.PlayOneShot(_source);
                     break;
                 case PlayMethod.PlayTrailing:
-                    _patch.PlayTrailingAudioSource(_trailTransform);
+                    _patch.PlayTrailing(_trailTransform);
                     break;
                 case PlayMethod.PlayOneShotTrailing:
-                    _patch.PlayOneShotTrailingAudioSource(_trailTransform);
+                    _patch.PlayOneShotTrailing(_trailTransform);
                     break;
                 default:
                     Debug.LogWarning("This play method is not supported. Please add it to the switch case.");
