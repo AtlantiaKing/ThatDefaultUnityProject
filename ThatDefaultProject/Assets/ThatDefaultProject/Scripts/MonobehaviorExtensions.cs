@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace that
 {
-	public static partial class MonobehaviorExtensions
+	public static class MonobehaviorExtensions
 	{
 		/// <summary>
 		/// if null, tries to get component, if still null, adds component. Returns component.
