@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,8 +8,13 @@ namespace that
     {
         public WeightedValue(float weight = 1f, T val = default(T))
         {
-            this.Weight = weight;
-            this.Value = val;
+            Weight = weight;
+            Value = val;
+        }
+        public WeightedValue(T val = default(T), float weight = 1f)
+        {
+            Weight = weight;
+            Value = val;
         }
 
         public float Weight {  get; set; }
@@ -38,6 +44,15 @@ namespace that
         public static bool YesOrNo(float yesWeight = 1f, float noWeight= 1f) 
         {
             return GetWeightedRandom(new WeightedValue<bool>(yesWeight,true),new WeightedValue<bool>(noWeight,false));
+        }
+
+        public static T GetRandomValue<T>(this List<T> list)
+        {
+            return list[Random.Range(0, list.Count)];
+        }
+        public static T GetRandomValue<T>(this T[] array)
+        {
+            return array[Random.Range(0, array.Length)];
         }
     }
 }
