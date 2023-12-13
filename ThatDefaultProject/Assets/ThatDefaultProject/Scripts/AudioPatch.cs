@@ -31,6 +31,7 @@ namespace that
 
 		[Header("Optional")]
 		[SerializeField] private AudioSource _trailingAudioSourcePrefab;
+		[SerializeField] private AudioRolloffMode _defaultTrailingRolloffMode = AudioRolloffMode.Linear;
 		[SerializeField] private AudioMixerGroup _mixer;
 		[SerializeField] private float _cooldown = 0;
 		[Tooltip("-1 means unlimited")][SerializeField] private int _maxAmountActive = -1;
@@ -53,7 +54,6 @@ namespace that
 		private void Awake()
 		{
 			_uniqueClips = _audioClips.ToList(); //converting the given clips to a list, then putting them in _uniqueclips too
-			_longestClipTime = _uniqueClips.Max(x => x.length);
 			_lastTime = Time.timeSinceLevelLoad;
 		}
 		private void OnValidate() //makes it so we can mess around with the volume/pitch using sliders and gives us the possibility to play sounds with a random pitch and volume
@@ -139,11 +139,11 @@ namespace that
 				obj = Instantiate(_trailingAudioSourcePrefab);
 			}
 			DestroyTimer destroyTimer = obj.gameObject.AddComponent<DestroyTimer>();
-			destroyTimer.Time = _longestClipTime;
+			destroyTimer.Time = LongestClipTime;
 			destroyTimer.StartTimer();
 			obj.transform.SetLocalPositionAndRotation(transform.position, transform.rotation);
 			obj.playOnAwake = false;
-			obj.rolloffMode = AudioRolloffMode.Linear;
+			obj.rolloffMode = _defaultTrailingRolloffMode;
 			return obj;
 		}
 
