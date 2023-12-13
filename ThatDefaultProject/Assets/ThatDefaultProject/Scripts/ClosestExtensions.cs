@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace that
 {
-	public static partial class ClosestExtensions
+	public static class ClosestExtensions
 	{
 		public static T FindClosest<T>(this IEnumerable<T> collection, Vector3 position) where T : Component
 		{
