@@ -1,107 +1,194 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
-// Credits: Zain Al Rubaie
-
 namespace that
 {
-    [CreateAssetMenu(menuName = "ThatAudio/AudioPatch")]
-    public class AudioPatch : ScriptableObject
-    {
-        [Header("Possibly played clips")]
-        public AudioClip[] _audioClips;
-        private List<AudioClip> _uniqueClips; //a list of remaining/unique clips
+	[CreateAssetMenu(menuName = "ThatAudio/AudioPatch")]
+	public class AudioPatch : ScriptableObject
+	{
+		private class PlayTimestamp
+		{
+			public PlayTimestamp(float clipLength, float timeStamp)
+			{
+				ClipLength = clipLength;
+				TimeStamp = timeStamp;
+			}
+			public float ClipLength { get; set; }
+			public float TimeStamp { get; set; }
+		}
 
-        [Header("Possible variation")]
-        [Range(0, 1)] public float maxVolume = 1;
-        [Range(0, 1)] public float minVolume = 1;
-        [Range(-3, 3)] public float maxPitch = 1;
-        [Range(-3, 3)] public float minPitch = 1;
+		[Header("Possibly played clips")]
+		public AudioClip[] _audioClips;
+		private List<AudioClip> _uniqueClips; //a list of remaining/unique clips
 
-        [Header("Optional")]
-        [SerializeField] private AudioMixerGroup _mixer;
-        private float _longestClipTime;
+		[Header("Possible variation")]
+		[Range(0, 1)][SerializeField] private float _maxVolume = 1;
+		[Range(0, 1)][SerializeField] private float _minVolume = 1;
+		[Range(-3, 3)][SerializeField] private float _maxPitch = 1;
+		[Range(-3, 3)][SerializeField] private float _minPitch = 1;
 
-        private void Awake()
-        {
-            _uniqueClips = _audioClips.ToList(); //converting the given clips to a list, then putting them in _uniqueclips too
-            _longestClipTime = _uniqueClips.Max(x => x.length);
-        }
-        private void OnValidate() //makes it so we can mess around with the volume/pitch using sliders and gives us the possibility to play sounds with a random pitch and volume
-        {
-            if (minVolume > maxVolume)
-            {
-                minVolume = maxVolume;
-            }
-            if (minPitch > maxPitch)
-            {
-                minPitch = maxPitch;
-            }
-        }
+		[Header("Optional")]
+		[SerializeField] private AudioSource _trailingAudioSourcePrefab;
+		[SerializeField] private AudioRolloffMode _defaultTrailingRolloffMode = AudioRolloffMode.Linear;
+		[SerializeField] private AudioMixerGroup _mixer;
+		[SerializeField] private float _cooldown = 0;
+		[Tooltip("-1 means unlimited")][SerializeField] private int _maxAmountActive = -1;
+		private float _lastTime;
+		private float _longestClipTime;
+		public float LongestClipTime
+		{
+			get
+			{
+				if (_longestClipTime <= 0)
+				{
+					_longestClipTime = _audioClips.Max(x => x.length);
+				}
+				return _longestClipTime;
+			}
+		}
 
-        public void PlayTrailingAudioSource(Transform transform)
-        {
-            SpawnTrailingAudioSource(transform, out AudioSource src, out DestroyTimer timer);
-            timer.Time = _longestClipTime;
-            Play(src);
-        }
-        
-        public void PlayOneShotTrailingAudioSource(Transform transform)
-        {
-            SpawnTrailingAudioSource(transform, out AudioSource src, out DestroyTimer timer);
-            timer.Time = _longestClipTime;
-            PlayOneShot(src);
-        }
+		private readonly List<PlayTimestamp> _playTimestamps = new();
 
-        public void Play(AudioSource source)
-        {
-            if (_mixer) source.outputAudioMixerGroup = _mixer;
-            source.clip = ReturnRandomClip(); //gets a random clip and loads it into the audio source
-                                              //takes a random audio clip with a random pitch and volume within the user defined range.
-            source.volume = Random.Range(minVolume, maxVolume);
-            source.pitch = Random.Range(minPitch, maxPitch);
-            source.Play();
-        }
+		private void Awake()
+		{
+			if (_uniqueClips == null || _uniqueClips.Count == 0) return;
 
-        public void PlayOneShot(AudioSource source) //Plays a oneshot sound (useful for playing multiple overlapping sounds from 1 gameobject)
-        {
-            if (_mixer) source.outputAudioMixerGroup = _mixer;
-            source.pitch = Random.Range(minPitch, maxPitch);
-            source.PlayOneShot(ReturnRandomClip(), Random.Range(minVolume, maxVolume));
-        }
+			_uniqueClips = _audioClips.ToList(); //converting the given clips to a list, then putting them in _uniqueclips too
+			_lastTime = Time.timeSinceLevelLoad;
+		}
+		private void OnValidate() //makes it so we can mess around with the volume/pitch using sliders and gives us the possibility to play sounds with a random pitch and volume
+		{
+			if (_minVolume > _maxVolume)
+			{
+				_minVolume = _maxVolume;
+			}
+			if (_minPitch > _maxPitch)
+			{
+				_minPitch = _maxPitch;
+			}
+			_cooldown = Mathf.Max(_cooldown, 0);
+			_maxAmountActive = Mathf.Max(_maxAmountActive, -1);
+		}
 
-        private AudioClip ReturnRandomClip()
-        {
+		public void PlayTrailing(Transform transform)
+		{
+			AudioSource audioSource = SpawnTrailingAudioSource(transform);
+			Play(audioSource);
+		}
 
-            if (_uniqueClips.Count > 0) //if there are still unique clips remaining within the uniqueclips variable
-            {
-                int randomIndex = Random.Range(0, _uniqueClips.Count); //makes a random index within the range of the audioclip lost 
-                AudioClip randomClip = _uniqueClips[randomIndex]; //copies an audioclip using that random index
-                _uniqueClips.RemoveAt(randomIndex); //removes the element at that index after copying it
+		public void PlayOneShotTrailing(Transform transform)
+		{
+			AudioSource audioSource = SpawnTrailingAudioSource(transform);
+			PlayOneShot(audioSource);
+		}
+		
+		public void PlayTrailing(IHasTransform hasTransform) => PlayTrailing(hasTransform.GetTransform());
+		public void PlayOneShotTrailing(IHasTransform hasTransform) => PlayOneShotTrailing(hasTransform.GetTransform());
 
-                return randomClip; //returns this element
-            }
-            else //if the remaining unique elements run out
-            {
-                _uniqueClips = _audioClips.ToList(); //refresh the list of remaining elements and repeat
-                int randomIndex = Random.Range(0, _uniqueClips.Count);
-                AudioClip randomClip = _uniqueClips[randomIndex];
-                _uniqueClips.RemoveAt(randomIndex);
+		public void Play(AudioSource source)
+		{
+			if (!CanPlay())
+			{
+				return;
+			}
+			if (_mixer) source.outputAudioMixerGroup = _mixer;
+			source.clip = ReturnRandomClip();
+			source.volume = Random.Range(_minVolume, _maxVolume);
+			source.pitch = Random.Range(_minPitch, _maxPitch);
+			source.Play();
+			AddPlaytimeStamp(new(source.clip.length, Time.timeSinceLevelLoad));
+		}
 
-                return randomClip;
-            }
-        }
+		public void PlayOneShot(AudioSource source)
+		{
+			if (!CanPlay())
+			{
+				return;
+			}
+			if (_mixer) source.outputAudioMixerGroup = _mixer;
+			source.pitch = Random.Range(_minPitch, _maxPitch);
+			AudioClip clip = ReturnRandomClip();
+			source.PlayOneShot(clip, Random.Range(_minVolume, _maxVolume));
+			AddPlaytimeStamp(new(clip.length, Time.timeSinceLevelLoad));
+		}
 
-        private void SpawnTrailingAudioSource(Transform transform, out AudioSource audioSource, out DestroyTimer destroyTimer)
-        {
-            var obj = new GameObject("[THAT] TrailingAudioSource");
-            obj.transform.position = transform.position;
-            obj.transform.rotation = transform.rotation;
-            audioSource = obj.AddComponent<AudioSource>();
-            destroyTimer = obj.AddComponent<DestroyTimer>();
-        }
-    }
+		private AudioClip ReturnRandomClip()
+		{
+			if (_audioClips.Length == 1)
+			{
+				return _audioClips[0];
+			}
+			Debug.Assert(_audioClips.Length != 0, $"AudioPatch ({name}) is empty!");
+			if (_uniqueClips.Count <= 0)
+			{
+				_uniqueClips = _audioClips.ToList();
+			}
+			int randomIndex = Random.Range(0, _uniqueClips.Count);
+			AudioClip randomClip = _uniqueClips[randomIndex];
+			_uniqueClips.RemoveAt(randomIndex);
+
+			return randomClip;
+		}
+
+		private AudioSource SpawnTrailingAudioSource(Transform transform)
+		{
+			AudioSource obj;
+			if (_trailingAudioSourcePrefab == null)
+			{
+				obj = new GameObject("[AudioPatch] Trailing audiosource").AddComponent<AudioSource>();
+			}
+			else
+			{
+				obj = Instantiate(_trailingAudioSourcePrefab);
+			}
+			DestroyTimer destroyTimer = obj.gameObject.AddComponent<DestroyTimer>();
+			destroyTimer.Time = LongestClipTime;
+			destroyTimer.StartTimer();
+			obj.transform.SetLocalPositionAndRotation(transform.position, transform.rotation);
+			obj.playOnAwake = false;
+			obj.rolloffMode = _defaultTrailingRolloffMode;
+			return obj;
+		}
+
+		private bool HasCooldownPassedAndUpdate()
+		{
+			bool hasCooldownPassed = _cooldown <= Mathf.Abs(Time.timeSinceLevelLoad - _lastTime);
+			if (hasCooldownPassed)
+			{
+				_lastTime = Time.timeSinceLevelLoad;
+			}
+			return hasCooldownPassed;
+		}
+
+		private bool CanPlay()
+		{
+			if (HasCooldownPassedAndUpdate())
+			{
+				return true;
+			}
+			if (_maxAmountActive == -1)
+			{
+				return true;
+			}
+			UpdateTimestamps();
+			return _playTimestamps.Count < _maxAmountActive;
+		}
+
+		private void UpdateTimestamps()
+		{
+			_playTimestamps.RemoveAll(
+				(PlayTimestamp playTimestamp) =>
+				{
+					return playTimestamp == null ||
+					Mathf.Abs(Time.timeSinceLevelLoad - playTimestamp.TimeStamp) > playTimestamp.ClipLength;
+				}
+				);
+		}
+		private void AddPlaytimeStamp(PlayTimestamp timestamp)
+		{
+			if (_maxAmountActive != -1) _playTimestamps.Add(timestamp);
+		}
+	}
 }
