@@ -53,6 +53,8 @@ namespace that
 
 		private void Awake()
 		{
+			if (_uniqueClips == null || _uniqueClips.Count == 0) return;
+
 			_uniqueClips = _audioClips.ToList(); //converting the given clips to a list, then putting them in _uniqueclips too
 			_lastTime = Time.timeSinceLevelLoad;
 		}
