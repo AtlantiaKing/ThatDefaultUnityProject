@@ -47,6 +47,9 @@ namespace that
 			PlayAttached(trailing.transform);
 		}
 
+		public void PlayAttached(IHasTransform hasTransform) => PlayAttached(hasTransform.GetTransform());
+		public void PlayTrailing(IHasTransform hasTransform) => PlayTrailing(hasTransform.GetTransform());
+
 		private GameObject ReturnRandomPrefab()
 		{
 			if (_particlePrefabs.Length == 1)
