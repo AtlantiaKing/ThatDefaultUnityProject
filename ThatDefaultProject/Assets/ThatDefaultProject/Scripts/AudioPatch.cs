@@ -83,6 +83,9 @@ namespace that
 			AudioSource audioSource = SpawnTrailingAudioSource(transform);
 			PlayOneShot(audioSource);
 		}
+		
+		public void PlayTrailing(IHasTransform hasTransform) => PlayTrailing(hasTransform.GetTransform());
+		public void PlayOneShotTrailing(IHasTransform hasTransform) => PlayOneShotTrailing(hasTransform.GetTransform());
 
 		public void Play(AudioSource source)
 		{
