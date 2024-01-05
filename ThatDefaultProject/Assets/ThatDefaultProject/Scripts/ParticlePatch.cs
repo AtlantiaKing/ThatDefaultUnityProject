@@ -14,6 +14,8 @@ namespace that
 
 		private void Awake()
 		{
+			if (_particlePrefabs == null) return;
+
 			Debug.Assert(_particlePrefabs.Length > 0, $"ParticlePrefabs is empty on ParticlePatch {name}");
 			if (_particlePrefabs != null && _particlePrefabs.Length > 0)
 			{
