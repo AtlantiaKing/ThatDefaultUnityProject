@@ -16,7 +16,7 @@ namespace that
 				return Object.Instantiate(original, parent, worldPositionStays);
 			}
 
-			(GameObject coreObject, Transform coreObjectTransform) = CreateDisabledCoreObject(parent);
+			(GameObject coreObject, Transform coreObjectTransform) = InstantiateDisabledRootObject(parent);
 			T instance = Object.Instantiate(original, coreObjectTransform, worldPositionStays);
 			SetActiveState(instance, false);
 			SetParent(instance, parent, worldPositionStays);
@@ -34,7 +34,7 @@ namespace that
 				return Object.Instantiate(original, position, rotation, parent);
 			}
 
-			(GameObject coreObject, Transform coreObjectTransform) = CreateDisabledCoreObject(parent);
+			(GameObject coreObject, Transform coreObjectTransform) = InstantiateDisabledRootObject(parent);
 			T instance = Object.Instantiate(original, position, rotation, coreObjectTransform);
 			SetActiveState(instance, false);
 			SetParent(instance, parent, false);
@@ -42,14 +42,14 @@ namespace that
 			return instance;
 		}
 
-		private static (GameObject coreObject, Transform coreObjectTransform) CreateDisabledCoreObject(Transform parent = null)
+		private static (GameObject coreObject, Transform coreObjectTransform) InstantiateDisabledRootObject(Transform parent = null)
 		{
-			GameObject coreObject = new();
-			coreObject.SetActive(false);
-			Transform coreObjectTransform = coreObject.transform;
-			coreObjectTransform.SetParent(parent);
+			GameObject rootObject = new();
+			rootObject.SetActive(false);
+			Transform rootTransform = rootObject.transform;
+			rootTransform.SetParent(parent);
 
-			return (coreObject, coreObjectTransform);
+			return (rootObject, rootTransform);
 		}
 
 		private static bool GetActiveState<T>(T obj) where T : Object
