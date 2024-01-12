@@ -31,41 +31,6 @@ namespace that
 
 		}
 
-		public static Vector3 LerpPositions(this List<Vector3> path, float t)
-		{
-			Debug.Assert(path != null, "Path is null");
-			Debug.Assert(path.Count > 0, "Path is empty");
-
-			t = Mathf.Clamp01(t);
-
-			int index1 = Mathf.FloorToInt(t * (path.Count - 1));
-			int index2 = Mathf.CeilToInt(t * (path.Count - 1));
-
-			index1 = Mathf.Clamp(index1, 0, path.Count - 1);
-			index2 = Mathf.Clamp(index2, 0, path.Count - 1);
-
-			Vector3 point1 = path[index1];
-			Vector3 point2 = path[index2];
-			return Vector3.Lerp(point1, point2, t - index1);
-		}
-		public static Vector3 LerpPositions(this Vector3[] path, float t)
-		{
-			Debug.Assert(path != null, "Path is null");
-			Debug.Assert(path.Length > 0, "Path is empty");
-
-			t = Mathf.Clamp01(t);
-
-			int index1 = Mathf.FloorToInt(t * (path.Length - 1));
-			int index2 = Mathf.CeilToInt(t * (path.Length - 1));
-
-			index1 = Mathf.Clamp(index1, 0, path.Length - 1);
-			index2 = Mathf.Clamp(index2, 0, path.Length - 1);
-
-			Vector3 point1 = path[index1];
-			Vector3 point2 = path[index2];
-			return Vector3.Lerp(point1, point2, t - index1);
-		}
-
 		public static void LerpTransforms(this List<Transform> path, float t, Transform outVal)
 		{
 			Debug.Assert(path != null, "Path is null");
@@ -113,6 +78,40 @@ namespace that
 			outVal.localScale = Vector3.Lerp(point1.localScale, point2.localScale, segmentT);
 		}
 
+		public static Vector3 LerpPositions(this List<Vector3> path, float t)
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Count > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Count - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Count - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Count - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Count - 1);
+
+			Vector3 point1 = path[index1];
+			Vector3 point2 = path[index2];
+			return Vector3.Lerp(point1, point2, t - index1);
+		}
+		public static Vector3 LerpPositions(this Vector3[] path, float t)
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Length > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Length - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Length - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Length - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Length - 1);
+
+			Vector3 point1 = path[index1];
+			Vector3 point2 = path[index2];
+			return Vector3.Lerp(point1, point2, t - index1);
+		}
 		public static Vector3 LerpPositions(this List<Transform> path, float t)
 		{
 			Debug.Assert(path != null, "Path is null");
@@ -146,6 +145,144 @@ namespace that
 			Vector3 point1 = path[index1].position;
 			Vector3 point2 = path[index2].position;
 			return Vector3.Lerp(point1, point2, t - index1);
+		}
+
+		public static Quaternion LerpRotations(this List<Transform> path, float t)
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Count > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Count - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Count - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Count - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Count - 1);
+
+			Quaternion point1 = path[index1].rotation;
+			Quaternion point2 = path[index2].rotation;
+			return Quaternion.Lerp(point1, point2, t - index1);
+		}
+		public static Quaternion LerpRotations(this Transform[] path, float t)
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Length > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Length - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Length - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Length - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Length - 1);
+
+			Quaternion point1 = path[index1].rotation;
+			Quaternion point2 = path[index2].rotation;
+			return Quaternion.Lerp(point1, point2, t - index1);
+		}
+		public static Quaternion SlerpRotations(this List<Transform> path, float t)
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Count > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Count - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Count - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Count - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Count - 1);
+
+			Quaternion point1 = path[index1].rotation;
+			Quaternion point2 = path[index2].rotation;
+			return Quaternion.Slerp(point1, point2, t - index1);
+		}
+		public static Quaternion SlerpRotations(this Transform[] path, float t)
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Length > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Length - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Length - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Length - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Length - 1);
+
+			Quaternion point1 = path[index1].rotation;
+			Quaternion point2 = path[index2].rotation;
+			return Quaternion.Slerp(point1, point2, t - index1);
+		}
+
+		public static Quaternion LerpRotations(this List<Quaternion> path, float t) 
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Count > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Count - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Count - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Count - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Count - 1);
+
+			Quaternion point1 = path[index1];
+			Quaternion point2 = path[index2];
+			return Quaternion.Lerp(point1, point2, t - index1);
+		}
+		public static Quaternion SlerpRotations(this List<Quaternion> path, float t) 
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Count > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Count - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Count - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Count - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Count - 1);
+
+			Quaternion point1 = path[index1];
+			Quaternion point2 = path[index2];
+			return Quaternion.Slerp(point1, point2, t - index1);
+		}
+		public static Quaternion LerpRotations(this Quaternion[] path, float t) 
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Length > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Length - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Length - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Length - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Length - 1);
+
+			Quaternion point1 = path[index1];
+			Quaternion point2 = path[index2];
+			return Quaternion.Lerp(point1, point2, t - index1);
+		}
+		public static Quaternion SlerpRotations(this Quaternion[] path, float t) 
+		{
+			Debug.Assert(path != null, "Path is null");
+			Debug.Assert(path.Length > 0, "Path is empty");
+
+			t = Mathf.Clamp01(t);
+
+			int index1 = Mathf.FloorToInt(t * (path.Length - 1));
+			int index2 = Mathf.CeilToInt(t * (path.Length - 1));
+
+			index1 = Mathf.Clamp(index1, 0, path.Length - 1);
+			index2 = Mathf.Clamp(index2, 0, path.Length - 1);
+
+			Quaternion point1 = path[index1];
+			Quaternion point2 = path[index2];
+			return Quaternion.Slerp(point1, point2, t - index1);
 		}
 	}
 }
