@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace that
+namespace That
 {
     public static class ChildrenExtensions
     {

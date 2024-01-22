@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace that
+namespace That
 {
     public class AudioPatchTester : MonoBehaviour
     {

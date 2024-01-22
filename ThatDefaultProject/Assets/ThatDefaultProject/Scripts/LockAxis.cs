@@ -1,4 +1,4 @@
-namespace that
+namespace That
 {
 	public enum LockAxis : byte
 	{

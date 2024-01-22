@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace that
+namespace That
 {
 	[CreateAssetMenu(menuName = "ThatAudio/AudioPatch")]
 	public class AudioPatch : ScriptableObject
