@@ -2,15 +2,15 @@ namespace That
 {
     namespace FSM
     {
-        public class FiniteStateMachine
+        public class FiniteStateMachine<T>
         {
-            public FiniteStateMachine(State startState)
+            public FiniteStateMachine(IState<T> startState)
             {
                 _currentState = startState;
             }
-            protected State _currentState;
+            protected IState<T> _currentState;
 
-            public virtual void Update<T>(T data)
+            public virtual void Update(T data = default)
             {
                 var previousState = _currentState;
                 _currentState = _currentState.OnHandle(data);
